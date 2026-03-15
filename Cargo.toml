@@ -1,0 +1,27 @@
+[package]
+name = "stardust_simworld_test"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+bevy = { version = "0.18.1", features = ["dynamic_linking"] }
+fixed = "1.29.0"
+cordic = "0.1.5"
+wacky_bag = {path="../../repos/wacky_bag"}
+rand = "0.8.5"
+statistic_physics = {path="../../repos/statistic_physics"}
+physics_basic = {path="../../repos/physics_basic"}
+log = { version = "*", features = ["max_level_debug", "release_max_level_warn"] }
+frunk = "0.4.4"
+frunk_core = "0.4.4"
+wacky_bag_fixed = {path="../../repos/wacky_bag_fixed"}
+derive_more = {version = "2.0.1",features = ["add","add_assign","not","deref","deref_mut"]}
+wacky_bag_bevy = {path="../../repos/wacky_bag_bevy"}
+nalgebra = "0.34.0"
+stardust_simworld = {path = "../stardust_simworld"}
+# ambassador = "0.4.1"
+
+
+[target.x86_64-pc-windows-msvc]
+linker = "rust-lld.exe"
