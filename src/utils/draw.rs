@@ -39,29 +39,3 @@ pub fn draw_gas_grid(res_gas_grid:Res<GridGasResource<Num,{DIM}>>,mut gizmos:Giz
 		gizmos.circle_2d(Isometry2d::from_translation(vecgridmid), v_var_len, WHITE);
 	});
 }
-
-// pub fn draw_gas_grid_(res_gas_grid:Res<gas_grid::GasGrid>,mut gizmos: Gizmos,){
-//     for (x,ggy) in &res_gas_grid.grid {
-//         for (y,gc) in ggy{
-//             let vecgridmid=Vec2{
-//                 x: (x as f32 * WLD_LEN_TO_SCREEN)+WLD_LEN_TO_SCREEN/2.0,
-//                 y: (y as f32 * WLD_LEN_TO_SCREEN)+WLD_LEN_TO_SCREEN/2.0,
-//             };
-            
-//             gizmos.rect_2d(
-//                 Isometry2d::from_translation(vecgridmid), 
-//                 Vec2 { x: WLD_LEN_TO_SCREEN, y: WLD_LEN_TO_SCREEN }, 
-//                 WHITE);
-//             let vec_grid_mid_offset=Vec2{
-//                 x:gc.matters.v_mean().0.to_num::<f32>()*WLD_LEN_TO_SCREEN,
-//                 y:gc.matters.v_mean().1.to_num::<f32>()*WLD_LEN_TO_SCREEN,
-//             };
-//             gizmos.arrow_2d(vecgridmid, vecgridmid+vec_grid_mid_offset*4.0, WHITE);
-
-//             let v_var_sqrt=gc.matters.v_var();
-//             let v_var_sqrt_len=v_var_sqrt.to_num::<f32>()*WLD_LEN_TO_SCREEN;
-//             gizmos.circle_2d(Isometry2d::from_translation(vecgridmid), v_var_sqrt_len, WHITE);
-            
-//         }
-//     }
-// }
