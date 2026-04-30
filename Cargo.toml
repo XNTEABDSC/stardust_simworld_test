@@ -22,8 +22,10 @@ nalgebra = "0.34.0"
 stardust_simworld = {path = "../stardust_simworld"}
 simba = {version = "0.9.1",features = ["partial_fixed_point_support"]}
 num-traits = "0.2.19"
-# ambassador = "0.4.1"
 
+bevy-inspector-egui = "0.36.0"
+bevy_pancam = "0.20.0"
+# ambassador = "0.4.1"
 
 [target.x86_64-pc-windows-msvc]
 linker = "rust-lld.exe"
