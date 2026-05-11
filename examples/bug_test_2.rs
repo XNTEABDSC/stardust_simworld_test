@@ -28,7 +28,7 @@ fn main(){
 	let mut app=App::new();
 	let lens=[4;DIM];
 	let one=Num::one();
-	let f_1_2=Num::from_num(0.5);
+	let f_1_2=0.5;
 
 	let default_grid_gas_data:GridGasDatas<Num,DIM>=grid_gas_datas(hlist!(Mass(one),Momentum([f_1_2*f_1_2*f_1_2*f_1_2,zero()].into()),Energy(f_1_2*f_1_2*f_1_2*f_1_2),Volume(one)));
 	
@@ -42,7 +42,7 @@ fn main(){
         .add_plugins(WorldInspectorPlugin::new())
 		.insert_resource(Time::from_hz(32.))
 		.add_plugins(SimulateSpeedPlugin{
-				global_speed:SimulateSpeed::from_fps(Num::from_num(16))
+				global_speed:SimulateSpeed::from_fps(16.0)
 			})
 		.add_plugins(GridPlugins{
 			grid_data:GridData{
