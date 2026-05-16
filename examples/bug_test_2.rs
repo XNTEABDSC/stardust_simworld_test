@@ -6,9 +6,8 @@ use bevy_pancam::{PanCam, PanCamPlugin};
 use frunk::{HList, hlist};
 use nalgebra::{SVector, zero};
 use num_traits::{One, Zero};
-use physics_basic::stats::{Energy, Mass, Momentum};
-use stardust_simworld::{grid::{GridPlugins, grid::GridData}, grid_gas::{GridGasPlugins, GridGasPluginsWithEdge, edge_type::GridGasEdgeWall, resource::{GridGasDatas, GridGasResource, grid_gas_datas}}, simulate_speed::{SimulateSpeedPlugin, simulate_speed::SimulateSpeed}};
-use statistic_physics::stats::Volume;
+use physics_basic::stats::{Energy, Mass, Momentum, Volume};
+use stardust_simworld::{grid::{GridPlugins, grid::GridData}, grid_gas::{GridGasPlugins, edge_type::GridGasEdgeWall, resource::{GridGasDatas, GridGasResource, grid_gas_datas}}, simulate_speed::{SimulateSpeedPlugin, simulate_speed::SimulateSpeed}};
 use wacky_bag::structures::n_dim_array::{n_dim_chunk::get_chunk_dim_elem_count, n_dim_chunk_array::NDimChunkArray};
 use wacky_bag_bevy::unit_ui::wld_cameras::WorldCameras;
 
