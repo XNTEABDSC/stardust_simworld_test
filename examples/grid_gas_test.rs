@@ -8,7 +8,7 @@ use nalgebra::{RealField, SVector, zero};
 use num_traits::{One, Zero};
 use physics_basic::{body::ShapeSphere, rotation::{AngularMomentum, Rotation, sphere_inertia}, stats::*};
 use stardust_simworld::{grid::{GridPlugins, at_grid::AtGridCell, grid::GridData}, grid_gas::{GridGasPlugins, edge_type::GridGasEdgeWall, resource::{GridGasDatas, GridGasResource, grid_gas_datas}}, physics, simulate_speed::{SimulateSpeedPlugin, simulate_speed::SimulateSpeed}, transform::{self, TransformPlugins, tramsform::WldLengthToScreenLength}};
-use statistic_physics::stats::Internal;
+use statistic_physics::{formulas::mass_momentum_2_kenetic, stats::Internal};
 use wacky_bag::structures::n_dim_array::{n_dim_chunk::get_chunk_dim_elem_count, n_dim_chunk_array::NDimChunkArray};
 use wacky_bag_bevy::unit_ui::wld_cameras::WorldCameras;
 
@@ -16,23 +16,24 @@ use stardust_simworld_test::{num::Num, utils::{consts::{DIM, WLD_LEN_TO_SCREEN},
 
 fn num<Num:RealField>(v:f32)->Num{Num::from_f32(v).unwrap()}
 
-// #[test]
-// fn test1(){
-	
-// 	let one=Num::one();
-// 	let f_1_2=Num::from_num(0.5);
-// 	let default_grid_gas_data:GridGasDatas<Num,DIM>=grid_gas_datas(hlist!(Mass(one),Momentum([f_1_2*f_1_2*f_1_2*f_1_2,zero()].into()),Energy(zero()),Volume(one)));
-
-// 	println!("a");
-// }
-
 fn main(){
 	let mut app=App::new();
 	let lens=[8;DIM];
 	let one=Num::one();
 	let f_1_2=0.5;
 
-	let default_grid_gas_data:GridGasDatas<Num,DIM>=grid_gas_datas(hlist!(Mass(one),Momentum([f_1_2*f_1_2*f_1_2*f_1_2,zero()].into()),Energy(f_1_2*f_1_2*f_1_2*f_1_2),Volume(one)));
+	
+	let g_momentum=Momentum([zero(),zero()].into());
+	let g_mass=Mass(one);
+	let default_grid_gas_data:GridGasDatas<Num,DIM>=
+	grid_gas_datas(hlist!(g_mass,g_momentum,Energy(mass_momentum_2_kenetic(hlist![&g_mass, &g_momentum]).0),Volume(one)));
+
+	let g_momentum_s=Momentum([f_1_2*f_1_2*f_1_2*f_1_2*f_1_2,zero()].into());
+	let g_mass_s=Mass(f_1_2);
+	let default_grid_gas_data_s:GridGasDatas<Num,DIM>=
+	grid_gas_datas(hlist!(g_mass_s,g_momentum_s,Energy(mass_momentum_2_kenetic(hlist![&g_mass_s, &g_momentum_s]).0),Volume(one)));
+
+
 	
 	// let default_grid_gas_data:GridGasDatas<Num,DIM>=grid_gas_datas(hlist!(Mass(one),Momentum([zero();DIM].into()),Energy(zero()),Volume(one)));
 	
@@ -42,7 +43,7 @@ fn main(){
 
         .add_plugins(EguiPlugin::default())
         .add_plugins(WorldInspectorPlugin::new())
-		.insert_resource(Time::from_hz(32.))
+		.insert_resource(Time::from_hz(16.))
 		.add_plugins(SimulateSpeedPlugin{
 			global_speed:SimulateSpeed::from_fps(16.0)
 		})
@@ -61,7 +62,11 @@ fn main(){
 			p: PhantomData::default(),
 			resource: GridGasResource(
 				NDimChunkArray::from_fn(lens.clone(), get_chunk_dim_elem_count::<GridGasDatas<Num,DIM>,DIM>(16*1024).0, |_a|{
-					default_grid_gas_data.clone()
+					if _a==[7,2] {
+						default_grid_gas_data_s.clone()
+					}else {
+						default_grid_gas_data_s.clone()
+					}
 				})
 			),
 
@@ -119,27 +124,27 @@ pub fn setup(mut commands:Commands, asset_server: Res<AssetServer>){
 	// let a:TypeRegistry
     commands.insert_resource(WorldCameras(vec![main_camera]));
 
-	let img=asset_server.load("textures/test/ship_C.png");
+	// let img=asset_server.load("textures/test/ship_C.png");
 
 	
 
-	commands.spawn((
-		physics::bundle::phy_body_statistic_bundle(hlist![
-			TimePass(num(1.0/16.0)),
-			ShapeSphere::from_radius(num(0.5)),
-			Mass(num(1.0)),
-			Pos(SVector::<Num,DIM>::from([num(2.0),num(2.0)])),
-			Momentum(SVector::<Num,DIM>::from([num(0.5),num(0.0)])),
-			sphere_inertia::<_,DIM>(num(1.0),num(0.5)),
-			AngularMomentum::<_,DIM>::zero(),
-			Rotation::default(),
-			Internal(num(0.1))
-		]),
-		Transform::default(),
-		Sprite::from_image(img),
-		AtGridCell([0,0]),
+	// commands.spawn((
+	// 	physics::bundle::phy_body_statistic_bundle(hlist![
+	// 		TimePass(num(1.0/16.0)),
+	// 		ShapeSphere::from_radius(num(0.5)),
+	// 		Mass(num(1.0)),
+	// 		Pos(SVector::<Num,DIM>::from([num(2.0),num(2.0)])),
+	// 		Momentum(SVector::<Num,DIM>::from([num(0.5),num(0.0)])),
+	// 		sphere_inertia::<_,DIM>(num(1.0),num(0.5)),
+	// 		AngularMomentum::<_,DIM>::zero(),
+	// 		Rotation::default(),
+	// 		Internal(num(0.1))
+	// 	]),
+	// 	Transform::default(),
+	// 	Sprite::from_image(img),
+	// 	AtGridCell([0,0]),
 
-	));
+	// ));
 
 
 }
