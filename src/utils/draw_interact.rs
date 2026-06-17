@@ -5,14 +5,15 @@ use physics_basic::stats::{Mass, Vel};
 use simba::scalar::SupersetOf;
 use stardust_simworld::{grid_gas::resource::GridGasResource, transform::tramsform::WldLengthToScreenLength};
 use statistic_physics::stats::{VelVar1Dir};
-use wacky_bag::{structures::n_dim_array::t_n_dim_array::TNDimArrayForEach, utils::output_func::HMappableFrom};
+use wacky_bag::{structures::n_dim_array::t_n_dim_array::{TNDimArrayForEach, TNDimArrayIterPair}, utils::output_func::HMappableFrom};
 use wacky_bag_bevy::utils::stat_for_hlist::MapFromStatRef;
 
 use crate::{num::Num, utils::consts::{DIM}};
 
 
 
-pub fn draw_gas_grid(res_gas_grid:Res<GridGasResource<Num,{DIM}>>,mut gizmos:Gizmos, len_trans:Res<WldLengthToScreenLength>){
+pub fn draw_gas_grid_interact_test(res_gas_grid:Res<GridGasResource<Num,{DIM}>>,mut gizmos:Gizmos, len_trans:Res<WldLengthToScreenLength>){
+
 	res_gas_grid.0.for_each(&mut |cell,idx|{
 		let (x,y)=(idx[0],idx[1]);
 		let wld_len_to_screen=len_trans.wld_len_2_screen_len;
@@ -33,12 +34,12 @@ pub fn draw_gas_grid(res_gas_grid:Res<GridGasResource<Num,{DIM}>>,mut gizmos:Giz
 			x:num_to_screen(v_mean.0[0]),
 			y:num_to_screen(v_mean.0[1]),
 		};
-		gizmos.arrow_2d(vecgridmid, vecgridmid+vec_grid_mid_offset, WHITE);
+		gizmos.arrow_2d(vecgridmid, vecgridmid+vec_grid_mid_offset*4.0, WHITE);
 
 		let v_var_len=num_to_screen(v_var.0);
-		gizmos.circle_2d(Isometry2d::from_translation(vecgridmid+vec_grid_mid_offset), v_var_len, WHITE);
+		gizmos.circle_2d(Isometry2d::from_translation(vecgridmid), v_var_len, WHITE);
 
-		gizmos.circle_2d(Isometry2d::from_translation(vecgridmid), num_to_screen(mass.0)/4.0, GREEN);
+		gizmos.cross_2d(Isometry2d::from_translation(vecgridmid), num_to_screen(mass.0)/4.0, GREEN);
 		// gizmos.
 	});
 }
