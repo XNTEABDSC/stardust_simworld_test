@@ -5,8 +5,9 @@ use physics_basic::stats::{Mass, Vel};
 use simba::scalar::SupersetOf;
 use stardust_simworld::{grid_gas::resource::GridGasResource, transform::tramsform::WldLengthToScreenLength};
 use statistic_physics::stats::{VelVar1Dir};
-use wacky_bag::{structures::n_dim_array::t_n_dim_array::TNDimArrayForEach, utils::output_func::HMappableFrom};
+use wacky_bag::{structures::n_dim_array::t_n_dim_array::TNDimArrayForEach};
 use wacky_bag_bevy::utils::stat_for_hlist::MapFromStatRef;
+use wacky_bag_hlist::output_map::HMappableFrom;
 
 use crate::{num::Num, utils::consts::{DIM}};
 

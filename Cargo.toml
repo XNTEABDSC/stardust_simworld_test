@@ -9,6 +9,7 @@ bevy = { version = "0.18.1", features = ["dynamic_linking"] }
 fixed = "1.29.0"
 cordic = "0.1.5"
 wacky_bag = {path="../../repos/wacky_bag"}
+wacky_bag_hlist = {path="../../repos/wacky_bag_hlist"}
 rand = "0.8.5"
 statistic_physics = {path="../../repos/statistic_physics"}
 physics_basic = {path="../../repos/physics_basic"}
