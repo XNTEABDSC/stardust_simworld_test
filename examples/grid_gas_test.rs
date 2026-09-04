@@ -128,7 +128,7 @@ pub fn setup(mut commands:Commands, asset_server: Res<AssetServer>){
 	let img=asset_server.load("textures/test/ship_C.png");
 
 	let ag_inertia=sphere_inertia::<_,DIM>(num(1.0),num(0.5));
-	let hlist_pat![agm]=angular_momentum_from_omega(hlist![&ag_inertia,&AngularVel(so_vec_to_mat(&[0.25].into()))]);
+	let hlist_pat![agm]=angular_momentum_from_omega(hlist![&ag_inertia,&AngularVel([0.25].into())]);
 	println!("{ag_inertia:.5?}");
 	commands.spawn((
 		physics::bundle::phy_body_statistic_bundle(hlist![
