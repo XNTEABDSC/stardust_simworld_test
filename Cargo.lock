@@ -5177,7 +5177,6 @@ name = "stardust_simworld"
 version = "0.1.0"
 dependencies = [
  "bevy",
- "bevy_ecs_macros",
  "cordic",
  "dashmap",
  "derive_more",
