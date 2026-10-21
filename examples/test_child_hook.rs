@@ -2,6 +2,7 @@
 use bevy::{ecs::world::CommandQueue, prelude::*, tasks::{ComputeTaskPool, TaskPool}};
 
 #[derive(Debug,Component,Reflect)]
+#[reflect(Component)]
 struct NameComponent(pub String);
 
 fn main(){

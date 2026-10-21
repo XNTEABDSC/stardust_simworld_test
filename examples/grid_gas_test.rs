@@ -146,6 +146,4 @@ pub fn setup(mut commands:Commands, asset_server: Res<AssetServer>){
 		Sprite::from_image(img),
 		AtGridCell([0,0]),
 	));
-
-
 }

@@ -5,27 +5,45 @@ edition = "2024"
 
 [dependencies]
 
-bevy = { version = "0.18.1", features = ["dynamic_linking"] }
-fixed = "1.29.0"
-cordic = "0.1.5"
-wacky_bag = {path="../../repos/wacky_bag"}
-wacky_bag_hlist = {path="../../repos/wacky_bag_hlist"}
-rand = "0.8.5"
-statistic_physics = {path="../../repos/statistic_physics"}
-physics_basic = {path="../../repos/physics_basic"}
-log = { version = "*", features = ["max_level_debug", "release_max_level_warn"] }
-frunk = "0.5.0"
-frunk_core = "0.5.0"
-derive_more = {version = "2.0.1",features = ["add","add_assign","not","deref","deref_mut"]}
-wacky_bag_bevy = {path="../../repos/wacky_bag_bevy"}
-nalgebra = "0.34.0"
-stardust_simworld = {path = "../stardust_simworld"}
-simba = {version = "0.9.1",features = ["partial_fixed_point_support"]}
-num-traits = "0.2.19"
+bevy = {workspace=true, features=["dynamic_linking"]}
 
-bevy-inspector-egui = "0.36.0"
-bevy_pancam = "0.20.0"
+frunk = {workspace=true}
+frunk_core = {workspace=true}
+
+rand = {workspace=true}
+derive_more = { workspace=true,features = ["add","add_assign","not","deref","deref_mut"]}
+log = { workspace=true, features = ["max_level_debug", "release_max_level_warn"] }
+dashmap = {workspace=true}
+bimap = {workspace=true}
+
+wacky_bag = {workspace=true}
+wacky_bag_hlist = {workspace=true}
+statistic_physics = {workspace=true}
+physics_basic = {workspace=true}
+
+simba = {workspace=true}
+num-traits = {workspace=true}
+nalgebra = {workspace=true}
+fixed = {workspace=true}
+cordic = {workspace=true}
+
+stardust_simworld = {path="../stardust_simworld"}
+wacky_bag_bevy = {path="../wacky_bag_bevy"}
+
+bevy-inspector-egui = "0.38.0"
+bevy_pancam = "0.22.0"
 # ambassador = "0.4.1"
 
-[target.x86_64-pc-windows-msvc]
-linker = "rust-lld.exe"
+# [target.x86_64-pc-windows-msvc]
+# linker = "rust-lld.exe"
+
+# # Enable a small amount of optimization in the dev profile.
+# [profile.dev]
+# opt-level = 1
+
+# [profile.dev.package."wacky_bag_bevy"]
+# opt-level = 1
+
+# # Enable a large amount of optimization in the dev profile for dependencies.
+# [profile.dev.package."*"]
+# opt-level = 3
