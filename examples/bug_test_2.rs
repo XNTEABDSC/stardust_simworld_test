@@ -1,13 +1,13 @@
 use std::marker::PhantomData;
 
-use bevy::{DefaultPlugins, app::{App, FixedUpdate, Startup}, asset::AssetServer, camera::Camera2d, ecs::system::{Commands, Res}, input::mouse::MouseButton, reflect::TypeRegistry, sprite::Sprite, time::Time, transform::components::Transform};
+use bevy::{DefaultPlugins, app::{App, FixedUpdate, Startup}, asset::AssetServer, camera::Camera2d, ecs::system::{Commands, Res}, input::mouse::MouseButton, sprite::Sprite, time::Time, transform::components::Transform};
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 use bevy_pancam::{PanCam, PanCamPlugin};
-use frunk::{HList, hlist};
+use frunk::hlist;
 use nalgebra::{RealField, SVector, zero};
 use num_traits::{One, Zero};
-use physics_basic::{body::ShapeSphere, rotation::{AngularMomentum, Rotation, sphere_inertia}, stats::*};
-use stardust_simworld::{grid::{GridPlugins, at_grid::AtGridCell, grid::GridData}, grid_gas::{GridGasPlugins, edge_type::GridGasEdgeWall, resource::{GridGasDatas, GridGasResource, grid_gas_datas}}, physics, simulate_speed::{SimulateSpeedPlugin, simulate_speed::SimulateSpeed}, transform::{self, TransformPlugins, tramsform::WldLengthToScreenLength}};
+use physics_basic::{body::ShapeSphere, rotation::{AngularMomentum, Rotation, angular_inertia_sphere}, stats::*};
+use stardust_simworld::{grid::{GridPlugins, at_grid::AtGridCell, grid::GridData}, grid_gas::{GridGasPlugins, edge_type::GridGasEdgeWall, resource::{GridGasDatas, GridGasResource, grid_gas_datas}}, physics, simulate_speed::{SimulateSpeedPlugin, simulate_speed::SimulateSpeed}, transform::{TransformPlugins, tramsform::WldLengthToScreenLength}};
 use statistic_physics::stats::Internal;
 use wacky_bag::structures::n_dim_array::{n_dim_chunk::get_chunk_dim_elem_count, n_dim_chunk_array::NDimChunkArray};
 use wacky_bag_bevy::unit_ui::wld_cameras::WorldCameras;
@@ -130,7 +130,7 @@ pub fn setup(mut commands:Commands, asset_server: Res<AssetServer>){
 			Mass(num(1.0)),
 			Pos(SVector::<Num,DIM>::from([num(2.0),num(2.0)])),
 			Momentum(SVector::<Num,DIM>::from([num(0.5),num(0.0)])),
-			sphere_inertia::<_,DIM>(num(1.0),num(0.5)),
+			angular_inertia_sphere::<_,DIM>(num(1.0),num(0.5)),
 			AngularMomentum::<_,DIM>::zero(),
 			Rotation::default(),
 			Internal(num(0.1))

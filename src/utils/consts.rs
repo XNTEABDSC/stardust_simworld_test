@@ -1,5 +1,4 @@
 use crate::num::Num;
-use num_traits::{One, cast::FromPrimitive};
 
 pub const DIM:usize=2;
 pub const GRID_LEN:(usize,usize)=(16,16);

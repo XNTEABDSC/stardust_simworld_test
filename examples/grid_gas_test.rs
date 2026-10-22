@@ -6,7 +6,7 @@ use bevy_pancam::{PanCam, PanCamPlugin};
 use frunk::{hlist, hlist_pat};
 use nalgebra::{RealField, SVector, zero};
 use num_traits::One;
-use physics_basic::{body::ShapeSphere, rotation::{AngularVel, Rotation, angular_momentum_from_omega, sphere_inertia, so_vec_to_mat}, stats::*};
+use physics_basic::{body::ShapeSphere, rotation::{AngularVel, Rotation, angular_momentum_from_omega, angular_inertia_sphere}, stats::*};
 use stardust_simworld::{grid::{GridPlugins, at_grid::AtGridCell, grid::GridData}, grid_gas::{GridGasPlugins, edge_type::GridGasEdgeWall, resource::{GridGasDatas, GridGasResource, grid_gas_datas}}, physics, simulate_speed::{SimulateSpeedPlugin, simulate_speed::SimulateSpeed}, transform::{TransformPlugins, tramsform::WldLengthToScreenLength}};
 use statistic_physics::{formulas::mass_momentum_2_kenetic, stats::Internal};
 use wacky_bag::structures::n_dim_array::{n_dim_chunk::get_chunk_dim_elem_count, n_dim_chunk_array::NDimChunkArray};
@@ -127,8 +127,8 @@ pub fn setup(mut commands:Commands, asset_server: Res<AssetServer>){
 
 	let img=asset_server.load("textures/test/ship_C.png");
 
-	let ag_inertia=sphere_inertia::<_,DIM>(num(1.0),num(0.5));
-	let hlist_pat![agm]=angular_momentum_from_omega(hlist![&ag_inertia,&AngularVel([0.25].into())]);
+	let ag_inertia=angular_inertia_sphere::<_,DIM>(num(1.0),num(0.5));
+	let hlist_pat![agm]=angular_momentum_from_omega(hlist![&ag_inertia,AngularVel([0.25].into())]);
 	println!("{ag_inertia:.5?}");
 	commands.spawn((
 		physics::bundle::phy_body_statistic_bundle(hlist![

@@ -1,16 +1,16 @@
 use std::{marker::PhantomData, ops::Deref};
 
-use bevy::{DefaultPlugins, app::{App, FixedUpdate, Startup}, asset::AssetServer, camera::Camera2d, ecs::{children, component::Component, name::Name, related, schedule::IntoScheduleConfigs, system::{Commands, Query, Res}}, input::{ButtonInput, keyboard::KeyCode, mouse::MouseButton}, math::Vec3, sprite::Sprite, time::Time, transform::components::Transform};
+use bevy::{DefaultPlugins, app::{App, FixedUpdate, Startup}, asset::AssetServer, camera::Camera2d, ecs::{component::Component, name::Name, related, schedule::IntoScheduleConfigs, system::{Commands, Query, Res}}, input::{ButtonInput, keyboard::KeyCode, mouse::MouseButton}, math::Vec3, sprite::Sprite, time::Time, transform::components::Transform};
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
-use bevy_pancam::{PanCam, PanCamPlugin};
+use bevy_pancam::{DirectionKeys, PanCam, PanCamPlugin};
 use frunk::{Poly, hlist, hlist_pat};
 use nalgebra::{RealField, SVector, zero};
 use num_traits::One;
-use physics_basic::{body::ShapeSphere, rotation::{AngularMomentum, AngularVel, Rotation, RotationMatrix, angular_momentum_from_omega, so_vec_to_mat, sphere_inertia}, stats::*};
-use stardust_simworld::{grid::{GridPlugins, at_grid::AtGridCell, grid::GridData}, grid_gas::{GridGasPlugins, edge_type::GridGasEdgeWall, resource::{GridGasDatas, GridGasResource, grid_gas_datas}}, multi_body::{self, attach::{AttachName, AttachTo, AttachToWith, AttachedEntities, MapAttachToWith}, propagate_change, propagate_position}, physics, schedule::schedule_sim, simulate_speed::{SimulateSpeedPlugin, simulate_speed::SimulateSpeed}, subsystem::{self, pipe::{dyn_key::DynKey, tree_router::{TreeRouter, TreeRouterPropagateLeafToRootSystemSet, TreeRouterPropagateRootToLeafSystemSet, TreeRouterVecComp}}, thrust::{self, ThrustDef}}, transform::{TransformPlugins, tramsform::WldLengthToScreenLength}};
+use physics_basic::{body::ShapeSphere, rotation::{AngularMomentum, AngularVel, Rotation, RotationMatrix, angular_momentum_from_omega, angular_inertia_sphere}, stats::*};
+use stardust_simworld::{grid::{GridPlugins, at_grid::AtGridCell, grid::GridData}, grid_gas::{GridGasPlugins, edge_type::GridGasEdgeWall, resource::{GridGasDatas, GridGasResource, grid_gas_datas}}, multi_body::{self, attach::{AttachTo, AttachedEntities, MapAttachToWith}, }, physics, schedule::schedule_sim, simulate_speed::{SimulateSpeedPlugin, simulate_speed::SimulateSpeed}, subsystem::{self, pipe::{dyn_key::DynKey, tree_router::{TreeRouterPropagateLeafToRootSystemSet, TreeRouterPropagateRootToLeafSystemSet, TreeRouterVecComp}}, thrust::{self, ThrustDef}}, transform::{TransformPlugins, tramsform::WldLengthToScreenLength}};
 use statistic_physics::{formulas::mass_momentum_2_kenetic, stats::Internal};
 use wacky_bag::structures::n_dim_array::{n_dim_chunk::get_chunk_dim_elem_count, n_dim_chunk_array::NDimChunkArray};
-use wacky_bag_bevy::{component::CAM, stat_component::{cache_set::{self, CacheSet}, stat::Stat}, unit_ui::wld_cameras::WorldCameras, utils::{plugin_add_systems::plugin_add_systems, relationship_root::RelationshipRoot, stat_for_hlist::{MapToChange, MapToStat}}};
+use wacky_bag_bevy::{stat_component::{cache_set::{self, CacheSet}, stat::Stat}, unit_ui::wld_cameras::WorldCameras, utils::{relationship_root::RelationshipRoot, stat_for_hlist::{MapToChange, MapToStat}}};
 
 use stardust_simworld_test::{num::Num, utils::{consts::{DIM, WLD_LEN_TO_SCREEN}, draw}};
 use wacky_bag_hlist::variadics_tuple::ToVariadicsTuple;
@@ -19,6 +19,7 @@ fn num<Num:RealField>(v:f32)->Num{Num::from_f32(v).unwrap()}
 fn cache_set_plugin(app:&mut App){
 	app.add_systems(schedule_sim(), cache_set::set_cache_set_system_cfg::<Stat<RotationMatrix<Num,DIM>>,()>());
 }
+
 fn main(){
 	let fps: f64=16.0;
 	let fixed_update=16.0;
@@ -110,7 +111,7 @@ pub fn ship_control(mut q:Query<(&mut ShipController, &mut TreeRouterVecComp)>,k
 		|(mut controller,interface)|{
 		let mut interface=interface.lock().unwrap();
 		controller.log_timer+=1;
-		if controller.log_timer>=32 {
+		if controller.log_timer>=64 {
 			controller.log_timer=0;
 			println!("{:?}",interface.deref());
 		}
@@ -129,17 +130,12 @@ pub fn ship_control(mut q:Query<(&mut ShipController, &mut TreeRouterVecComp)>,k
 
 		rt.2.power=rt.0.max_power*(input_x+input_y);
 		
-		// {
-		// 	let km=interface.keys().key_map();
-
-		// 	// println!("{:?}",km);
-		// }
 	});
 }
 #[test]
 pub fn test_awd(){
 	let ag_inertia=sphere_inertia::<_,DIM>(num(1.0),num(0.5));
-	let hlist_pat![agm]=angular_momentum_from_omega(hlist![&ag_inertia,&AngularVel([0.25].into())]);
+	let hlist_pat![agm]=angular_momentum_from_omega(hlist![&ag_inertia,AngularVel([0.25].into())]);
 	println!("{ag_inertia:.5?}");
 	println!("{agm:.5?}");
 
@@ -152,6 +148,7 @@ pub fn setup(mut commands:Commands, asset_server: Res<AssetServer>){
         Transform::from_xyz(0.0, 0.0,0.0),
         PanCam{
             grab_buttons: vec![MouseButton::Middle],
+			move_keys:DirectionKeys::NONE,
             ..Default::default()
         },
     )).id();
@@ -162,17 +159,15 @@ pub fn setup(mut commands:Commands, asset_server: Res<AssetServer>){
 	let img=asset_server.load("textures/test/ship_C.png");
 	let img_thrust=asset_server.load("textures/test/enemy_A.png");
 
-	let ag_inertia=sphere_inertia::<_,DIM>(num(1.0),num(0.5));
-	let hlist_pat![agm]=angular_momentum_from_omega(hlist![&ag_inertia,&AngularVel([0.25].into())]);
-	println!("{ag_inertia:.5?}");
-	println!("{agm:.5?}");
+	let ag_inertia=angular_inertia_sphere::<_,DIM>(num(1.0),num(0.5));
+	let hlist_pat![agm]=angular_momentum_from_omega(hlist![&ag_inertia,AngularVel([0.25].into())]);
 
 	let _a_ship=commands.spawn((
 		physics::bundle::phy_body_statistic_bundle(hlist![
 			TimePass(num(1.0/16.0)),
 			ShapeSphere::from_radius(num(0.5)),
 			Mass(num(1.0)),
-			Pos(SVector::<Num,DIM>::from([num(2.0),num(2.0)])),
+			Pos(SVector::<Num,DIM>::from([num(7.0),num(7.0)])),
 			Momentum(SVector::<Num,DIM>::from([num(0.0),num(0.0)])),
 			ag_inertia,
 			agm,
